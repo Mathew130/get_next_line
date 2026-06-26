@@ -1,0 +1,23 @@
+# include "get_next_line.h"
+
+size_t  ft_strlen(char *str)
+{   
+    size_t i = 0;
+    if(!str)
+       return(0);
+    while(str[i])
+        i++;
+    return(i);
+}
+
+char	*ft_strchr(char *str, int c);
+{
+    int i = 0;
+
+    while (str[i])
+    {
+
+    }
+    return(NULL);
+
+}
