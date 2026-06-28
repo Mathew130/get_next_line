@@ -6,7 +6,7 @@
 /*   By: mlucka <mlucka@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/26 13:16:41 by mlucka            #+#    #+#             */
-/*   Updated: 2026/06/28 11:30:50 by mlucka           ###   ########.fr       */
+/*   Updated: 2026/06/28 19:36:07 by mlucka           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static char	*read_file(int fd, char *stash)
 {
 	char	*buffer;
 	int		bytes;
+	char	*temp;
 
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
@@ -27,10 +28,19 @@ static char	*read_file(int fd, char *stash)
 		if (bytes == -1)
 		{
 			free(buffer);
+			free(stash);
 			return (NULL);
 		}
 		buffer[bytes] = '\0';
-		stash = ft_strjoin(stash, buffer);
+		temp = ft_strjoin(stash, buffer);
+		if (!temp)
+		{
+			free(buffer);
+			free(stash);
+			return (NULL);
+		}
+		free(stash);
+		stash = temp;
 	}
 	free(buffer);
 	return (stash);
@@ -55,7 +65,7 @@ static char	*extract_line(char *stash)
 	line = malloc(sizeof(char) * (i + 2));
 	if (!line)
 		return (NULL);
-	while (j < i)
+	while (j <= i)
 	{
 		line[j] = stash[j];
 		j++;
@@ -82,7 +92,10 @@ static char	*clean_stash(char *stash)
 	i++;
 	new_stash = malloc(sizeof(char) * (ft_strlen(&stash[i]) + 1));
 	if (!new_stash)
+	{
+		free(stash);
 		return (NULL);
+	}
 	while (stash[i])
 	{
 		new_stash[j] = stash[i];
