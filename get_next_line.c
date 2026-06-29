@@ -6,11 +6,27 @@
 /*   By: mlucka <mlucka@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/26 13:16:41 by mlucka            #+#    #+#             */
-/*   Updated: 2026/06/28 19:36:07 by mlucka           ###   ########.fr       */
+/*   Updated: 2026/06/29 13:34:58 by mlucka           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+char	*helper1(char *buffer, char *stash)
+{
+	free(buffer);
+	buffer = NULL;
+	free(stash);
+	stash = NULL;
+	return (NULL);
+}
+
+char	*helper2(char *stash)
+{
+	free(stash);
+	stash = NULL;
+	return (NULL);
+}
 
 static char	*read_file(int fd, char *stash)
 {
@@ -26,52 +42,18 @@ static char	*read_file(int fd, char *stash)
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes == -1)
-		{
-			free(buffer);
-			free(stash);
-			return (NULL);
-		}
+			return (helper1(buffer, stash));
+		if (bytes == 0)
+			break ;
 		buffer[bytes] = '\0';
 		temp = ft_strjoin(stash, buffer);
 		if (!temp)
-		{
-			free(buffer);
-			free(stash);
-			return (NULL);
-		}
+			return (helper1(buffer, stash));
 		free(stash);
 		stash = temp;
 	}
 	free(buffer);
 	return (stash);
-}
-
-static char	*extract_line(char *stash)
-{
-	int		i;
-	int		j;
-	char	*line;
-
-	i = 0;
-	j = 0;
-	while (stash[i] && stash[i] != '\n')
-	{
-		i++;
-	}
-	if (!stash || stash[0] == '\0')
-	{
-		return (NULL);
-	}
-	line = malloc(sizeof(char) * (i + 2));
-	if (!line)
-		return (NULL);
-	while (j <= i)
-	{
-		line[j] = stash[j];
-		j++;
-	}
-	line[j] = '\0';
-	return (line);
 }
 
 static char	*clean_stash(char *stash)
@@ -85,22 +67,14 @@ static char	*clean_stash(char *stash)
 	while (stash[i] && stash[i] != '\n')
 		i++;
 	if (!stash[i])
-	{
-		free(stash);
-		return (NULL);
-	}
+		return (helper2(stash));
 	i++;
 	new_stash = malloc(sizeof(char) * (ft_strlen(&stash[i]) + 1));
 	if (!new_stash)
-	{
-		free(stash);
-		return (NULL);
-	}
+		return (helper2(stash));
 	while (stash[i])
 	{
-		new_stash[j] = stash[i];
-		i++;
-		j++;
+		new_stash[j++] = stash[i++];
 	}
 	new_stash[j] = '\0';
 	free(stash);
@@ -112,6 +86,8 @@ char	*get_next_line(int fd)
 	static char	*stash;
 	char		*line;
 
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	stash = read_file(fd, stash);
 	if (!stash)
 		return (NULL);

@@ -6,7 +6,7 @@
 /*   By: mlucka <mlucka@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/26 13:16:22 by mlucka            #+#    #+#             */
-/*   Updated: 2026/06/28 15:31:29 by mlucka           ###   ########.fr       */
+/*   Updated: 2026/06/29 12:54:58 by mlucka           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,12 @@ char	*ft_strchr(char *str, int c)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] == c)
-		{
+		if (str[i] == (char)c)
 			return (&str[i]);
-		}
 		i++;
 	}
+	if (str[i] == (char)c)
+		return (&str[i]);
 	return (NULL);
 }
 
@@ -53,7 +53,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	if (!s1)
 		s1 = "";
 	if (!s2)
-		s2 = "";
+		return (NULL);
 	new = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
 	if (!new)
 		return (NULL);
@@ -64,10 +64,34 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	while (s2[j])
 	{
-		new[i] = s2[j];
-		i++;
-		j++;
+		new[i++] = s2[j++];
 	}
 	new[i] = '\0';
 	return (new);
+}
+
+char	*extract_line(char *stash)
+{
+	int		i;
+	int		j;
+	char	*line;
+
+	i = 0;
+	j = 0;
+	if (!stash || stash[0] == '\0')
+		return (NULL);
+	while (stash[i] && stash[i] != '\n')
+		i++;
+	line = malloc(sizeof(char) * (i + 2));
+	if (!line)
+		return (NULL);
+	while (j < i)
+	{
+		line[j] = stash[j];
+		j++;
+	}
+	if (stash[i] == '\n')
+		line[j++] = '\n';
+	line[j] = '\0';
+	return (line);
 }
